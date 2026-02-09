@@ -231,8 +231,48 @@ port_acquire(int port, procid_t proc_id)
     // If this operation fails, return -1.
 
     // YOUR CODE HERE
+    int i;
     
-    return -1;
+    //allocate a free port(-1)
+    if(port == -1)
+    {
+        for(i = 0; i < NPORT; i++)
+        {
+            if(ports[i].free)
+            {
+                ports[i].free = 0;
+                ports[i].owner = proc_id;
+
+                //initialize buffer
+                ports[i].head = 0;
+                ports[i].tail = 0;
+                ports[i].count = 0;
+
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    //if a specific port is requested
+    if(port < 0 || port >= NPORT)
+    {
+        return -1;
+    }
+    if(!ports[port].free)
+    {
+        return -1;
+    }
+    //allocate requested port
+    ports[port].free = 0;
+    ports[port].owner = proc_id;
+
+    //initialize buffer for the requested port
+    ports[port].head = 0;
+    ports[port].tail = 0;
+    ports[port].count = 0;
+    
+    return port;
 }
 
 
