@@ -200,6 +200,10 @@ port_close(int port)
     {
         return;
     }
+    if(ports[port].type == PORT_TYPE_KERNEL)
+    {
+        return;
+    }
     //check for free port if it is then don't need to do anything
     if(ports[port].free)
     {
@@ -213,7 +217,7 @@ port_close(int port)
     //mark port as free
     ports[port].free = 1;
     ports[port].type = PORT_TYPE_FREE;
-    ports[port].owner = -1;
+    ports[port].owner = 0;
 }
 
 
@@ -251,6 +255,11 @@ port_acquire(int port, procid_t proc_id)
                 return i;
             }
         }
+        return -1;
+    }
+    //predefined kernel ports cannot be acquired
+    if(ports[port].type == PORT_TYPE_KERNEL)
+    {
         return -1;
     }
 
@@ -338,9 +347,9 @@ port_read(int port, char *buf, int n)
     }
 
     //read n bytes from buffer or until buffer is empty
-    while( read < n && ports[port].count < PORT_BUF_SIZE)
+    while( read < n && ports[port].count > 0)
     {
-        ports[port].buffer[ports[port].head] = buf[read];
+        buf[read] = ports[port].buffer[ports[port].head];
         ports[port].head = (ports[port].head + 1) % PORT_BUF_SIZE;
         ports[port].count--;
         read++;
