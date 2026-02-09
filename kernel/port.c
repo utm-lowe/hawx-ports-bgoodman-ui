@@ -287,7 +287,29 @@ port_write(int port, char *buf, int n)
     // write it.
 
     // YOUR CODE HERE
-    return -1;
+    int written = 0;
+
+    //validate port
+    if(port < 0 || port >= NPORT)
+    {
+      return -1;  
+    }
+    if(ports[port].free)
+    {
+        return -1;
+    }
+
+    //write n bytes to buffer or until buffer is full
+    while( written < n && ports[port].count < PORT_BUF_SIZE)
+    {
+        ports[port].buffer[ports[port].tail] = buf[written];
+        ports[port].tail = (ports[port].tail + 1) % PORT_BUF_SIZE;
+        ports[port].count++;
+        written++;
+    }
+    return written;
+    
+    
 }
 
 
