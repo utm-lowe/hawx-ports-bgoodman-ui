@@ -157,6 +157,32 @@ port_init(void)
     // non-kernal ports. Make sure that all ports are empty.
 
     // YOUR CODE HERE
+    int i;
+
+    for(i = 0; i < NPORT; i++)
+    {
+        //initialize as empty buffer
+        ports[i].head = 0;
+        ports[i].tail = 0;
+        ports[i].count = 0;
+
+        //check for predefined kernel
+        if(i == PORT_CONSOLEIN || i == PORT_CONSOLEOUT || i == PORT_DISKCMD)
+        {
+            ports[i].free = 0;
+            ports[i].type = PORT_TYPE_KERNEL;
+            ports[i].owner = 0; //since the kernel would own it
+
+        }
+        //ports that aren't predefined are free
+        else
+        {
+            ports[i].free = 1;
+            ports[i].type = PORT_TYPE_FREE;
+            ports[i].owner = -1; //no owner
+
+        }
+    }
 }
 
 
