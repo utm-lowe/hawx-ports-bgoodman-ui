@@ -325,5 +325,25 @@ port_read(int port, char *buf, int n)
 
     // YOUR CODE HERE
 
-    return -1;
+     int read = 0;
+
+    //validate port
+    if(port < 0 || port >= NPORT)
+    {
+      return -1;  
+    }
+    if(ports[port].free)
+    {
+        return -1;
+    }
+
+    //read n bytes from buffer or until buffer is empty
+    while( read < n && ports[port].count < PORT_BUF_SIZE)
+    {
+        ports[port].buffer[ports[port].head] = buf[read];
+        ports[port].head = (ports[port].head + 1) % PORT_BUF_SIZE;
+        ports[port].count--;
+        read++;
+    }
+    return read;
 }
